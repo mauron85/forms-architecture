@@ -125,14 +125,13 @@ const GlobalContext = createContext(formApi);
 
 const Form = () => {
   const formApi = useContext(GlobalContext);
+  const values = formApi.getState().values;
   return (
-    <FinalForm initialValues={formApi.getState().values}
+    <FinalForm onSubmit={onSubmit} initialValues={values}
       subscription={{ submitting: true, pristine: true, valid: true }}>
         {/* definition of fields ommited for brewity */}
         <FormSpy subscription={{ values: true }}>
-            {({ values }) => {
-                formApi.initialize(values);
-            }}
+            {({ values }) => { formApi.initialize(values) }}
         </FormSpy>
     </FinalForm>
   );

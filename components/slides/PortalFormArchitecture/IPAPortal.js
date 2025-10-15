@@ -130,6 +130,7 @@ const Form = () => {
   const formApi = useContext(GlobalContext);
   return (
     <FinalForm form={formApi}
+      onSubmit={onSubmit}
       subscription={{ submitting: true, pristine: true, valid: true }}>
         {/* definition of fields ommited for brewity */}
         {/* no form synchronization needed */}
