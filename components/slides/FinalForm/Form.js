@@ -15,52 +15,69 @@ const required = (value) => (value ? undefined : "Required");
 export const Form = () => (
   <FinalForm
     onSubmit={onSubmit}
-    subscription={{ values: true, submitting: true, pristine: true }}
-    initialValues={{ stooge: "larry", employed: false }}
-    render={({ handleSubmit, form, submitting, pristine, values }) => (
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-      >
-        <RenderCount />
+    subscription={{
+      values: true,
+      submitting: true,
+      pristine: true,
+      valid: true,
+    }}
+    initialValues={{ firstName: "John", lastName: "Connor", employed: false }}
+    render={({ handleSubmit, form, __versions, ...formState }) => {
+      const { submitting, pristine, valid } = formState;
+      return (
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        >
+          <RenderCount />
 
-        <Input name="firstName" label="First Name" validate={required} />
-        <Input name="lastName" label="Last Name" validate={required} />
-        <Checkbox name="employed" label="Employed" />
-        <TextArea name="notes" label="Notes" />
+          <Input name="firstName" label="First Name" validate={required} />
+          <Input name="lastName" label="Last Name" validate={required} />
+          <Checkbox name="employed" label="Employed" />
+          <TextArea name="notes" label="Notes" />
 
-        <div className="flex items-center justify-between">
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="submit"
-            disabled={submitting || pristine}
-          >
-            Submit
-          </button>
-          <button
-            className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
-            type="button"
-            onClick={form.reset}
-            disabled={submitting || pristine}
-          >
-            Reset
-          </button>
-        </div>
-        {values ? (
-          <pre className="mt-6 text-gray-900">
-            {JSON.stringify(values, 0, 2)}
-          </pre>
-        ) : (
-          <FormSpy subscription={{ values: true }}>
-            {({ values }) => (
-              <pre className="mt-6 text-gray-900">
-                {JSON.stringify(values, 0, 2)}
-              </pre>
-            )}
-          </FormSpy>
-        )}
-      </form>
-    )}
+          <div className="flex items-center justify-between">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:bg-gray-500 disabled:cursor-not-allowed"
+              type="submit"
+              disabled={submitting || pristine || !valid}
+            >
+              Submit
+            </button>
+            <button
+              className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800 disabled:text-gray-500 disabled:cursor-not-allowed"
+              type="button"
+              onClick={form.reset}
+              disabled={submitting || pristine}
+            >
+              Reset
+            </button>
+          </div>
+          {formState.values ? (
+            <pre className="mt-6 text-gray-900">
+              {JSON.stringify(formState, 0, 2)}
+            </pre>
+          ) : (
+            <FormSpy
+              subscription={{
+                submitting: true,
+                pristine: true,
+                valid: true,
+                values: true,
+              }}
+            >
+              {({ form, ...formState }) => {
+                return (
+                  <pre className="mt-6 text-gray-900">
+                    {JSON.stringify(formState, 0, 2)}
+                  </pre>
+                );
+              }}
+            </FormSpy>
+          )}
+        </form>
+      );
+    }}
   />
 );
 
