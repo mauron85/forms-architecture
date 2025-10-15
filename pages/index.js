@@ -1,5 +1,5 @@
 import { Deck, DefaultTemplate } from 'spectacle';
-import { Intro, WhatArePortals, FinalForm, PortalFormArchitecture, Proposal } from '../components/slides';
+import { Intro, WhatArePortals, FinalForm, PortalFormArchitecture, Proposal, Links } from '../components/slides';
 
 function Home() {
   return (
@@ -9,6 +9,7 @@ function Home() {
         <FinalForm />
         <PortalFormArchitecture />
         <Proposal />
+        <Links />
     </Deck>
   )
 }
