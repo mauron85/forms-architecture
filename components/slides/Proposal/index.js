@@ -1,9 +1,11 @@
-import { MarkdownSlide } from "spectacle";
+import { SlideLayout, MarkdownSlide } from "spectacle";
+import * as Code from "./Code";
 
 export function Proposal() {
   return (
-    <MarkdownSlide>
-{`
+    <>
+      <MarkdownSlide>
+        {`
 # What we want? 🤯
 
     - I want a multi-step wizard form with each step on its own Next.js page.
@@ -11,6 +13,8 @@ export function Proposal() {
     - I want navigation buttons below each page to move between steps and submit.
     - I want each step to have its own validation and behavior.
 `}
-    </MarkdownSlide>
+      </MarkdownSlide>
+      <SlideLayout.TwoColumn left={<Code.App />} right={<Code.Page />} />
+    </>
   );
 }
