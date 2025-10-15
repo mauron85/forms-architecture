@@ -1,11 +1,14 @@
-import { Deck, Slide, Heading, DefaultTemplate } from 'spectacle';
+import { Deck, DefaultTemplate } from 'spectacle';
+import { Intro, WhatArePortals, FinalForm, PortalFormArchitecture, Proposal } from '../components/slides';
 
 function Home() {
   return (
     <Deck template={<DefaultTemplate />}>
-      <Slide>
-        <Heading>Welcome to Spectacle</Heading>
-      </Slide>
+        <Intro />
+        <WhatArePortals />
+        <FinalForm />
+        <PortalFormArchitecture />
+        <Proposal />
     </Deck>
   )
 }
