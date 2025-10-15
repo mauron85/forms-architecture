@@ -1,6 +1,5 @@
 import { Slide, SlideLayout, Heading, Image } from "spectacle";
-import { PortalApp } from "./PortalApp";
-import { Code } from "./Code";
+import * as PortalApp from "./PortalApp";
 
 export function PortalFormArchitecture() {
   return (
@@ -13,7 +12,7 @@ export function PortalFormArchitecture() {
           size="100%"
         />
       </Slide>
-      <SlideLayout.TwoColumn left={<Code />} right={<PortalApp />} />
+      <SlideLayout.TwoColumn left={<PortalApp.Code />} right={<PortalApp.PortalApp />} />
     </>
   );
 }
