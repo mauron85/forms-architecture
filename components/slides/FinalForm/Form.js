@@ -74,7 +74,8 @@ export const Code = () => (
             <Form
                 subscription={{ values: true }}
                 initialValues={{ firstName: '' }}
-                onSubmit={values => { console.log(values); }
+                validate={validate}
+                onSubmit={onSubmit}
                 render={({ handleSubmit }) => (
                     <form onSubmit={handleSubmit}>
                         <div>
