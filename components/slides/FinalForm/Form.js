@@ -11,12 +11,11 @@ const onSubmit = async (values) => {
 };
 
 const required = (value) => (value ? undefined : "Required");
-const subscription = { submitting: true, pristine: true };
 
 export const Form = () => (
   <FinalForm
     onSubmit={onSubmit}
-    subscription={subscription}
+    subscription={{ values: true, submitting: true, pristine: true }}
     initialValues={{ stooge: "larry", employed: false }}
     render={({ handleSubmit, form, submitting, pristine, values }) => (
       <form
@@ -73,6 +72,7 @@ export const Code = () => (
         
         const App = () => (
             <Form
+                subscription={{ values: true }}
                 initialValues={{ firstName: '' }}
                 onSubmit={values => { console.log(values); }
                 render={({ handleSubmit }) => (
