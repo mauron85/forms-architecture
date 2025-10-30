@@ -1,5 +1,17 @@
-import '../global.css'
+import "../global.css";
+import {DefaultLayout} from "../components/Layout";
 
-export default function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+function MyApp({
+  Component,
+  pageProps: { session: authSession, ...pageProps },
+}) {
+  const Layout = Component.getLayout ?? DefaultLayout;
+
+  return (
+    <Layout>
+      <Component {...pageProps} />
+    </Layout>
+  );
 }
+
+export default MyApp;
