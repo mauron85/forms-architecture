@@ -10,6 +10,7 @@ export const SidebarLayout = ({ children, sidebar }) => {
         <ReadonlyField label="Street Nr." name="streetNr" />
         <ReadonlyField label="City" name="city" />
         <ReadonlyField label="Postal Code" name="postalCode" />
+        <ReadonlyField label="Notes" name="notes" />
         <ActiveField />
       </div>
       <div className="flex-1 p-4">{children}</div>
