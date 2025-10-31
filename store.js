@@ -1,14 +1,20 @@
 import { create } from "zustand";
 
 const useFormStore = create((set) => ({
-  formValues: {},
+  formValues: {
+    firstName: "Albert",
+    // lastName: "Einstein"
+  },
   formState: {},
-  updateFormState: (stepNr, { values, ...formState }) =>
+  updateFormValues: (stepNr, values) =>
     set((state) => ({
       formValues: {
         ...state.formValues,
         ...values,
       },
+    })),
+  updateFormState: (stepNr, formState) =>
+    set((state) => ({
       formState: {
         ...state.formState,
         ...formState,

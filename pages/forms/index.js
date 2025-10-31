@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { FormSpy } from "react-final-form";
 import { WizardForm } from "../../components/WizardForm";
 import { RenderCount } from "../../components/RenderCount";
 import { Input, Checkbox, TextArea } from "../../components/Field";
-import { FormWizardLayout } from "../../components/Layout";
+import { SidebarLayout } from "../../components/Layout";
 import { useRouter } from "next/router";
+import { noop } from "#utils/noop";
 
 const required = (value) => (value ? undefined : "Required");
 
@@ -30,7 +30,8 @@ function MultiStepForm() {
 
   return (
     <>
-      <h1>Multi step form example</h1>
+      <h1 className="text-3xl font-bold mb-4">Multi step form example</h1>
+      <h2 className="text-2xl font-bold mb-4">Step 1</h2>
 
       <WizardForm
         stepNr={1}
@@ -41,10 +42,11 @@ function MultiStepForm() {
           pristine: true,
           valid: true,
         }}
+        onSubmit={noop}
         initialValues={{
-          firstName: "John",
+          // firstName: "John",
           lastName: "Connor",
-          employed: false,
+          // employed: false,
         }}
       >
         {({ handleSubmit, form, __versions, ...formState }) => {
@@ -52,13 +54,13 @@ function MultiStepForm() {
           return (
             <form
               onSubmit={handleSubmit}
-              className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+              className="bg-white shadow-md rounded px-4 sm:px-8 pt-6 pb-8 mb-4"
             >
               <RenderCount />
 
               <Input name="firstName" label="First Name" />
               <Input name="lastName" label="Last Name" />
-              <Checkbox name="employed" label="Employed" />
+              <Checkbox name="employed" label="Employed" initialValue={true} />
               <TextArea name="notes" label="Notes" />
 
               <div className="flex items-center justify-between">
@@ -76,21 +78,24 @@ function MultiStepForm() {
         }}
       </WizardForm>
 
+      <h2 className="text-2xl font-bold mb-4">Step 2</h2>
+
       <WizardForm
         stepNr={2}
         // validate={validateStep1}
         onSubmit={onSubmit}
+        // keepDirtyOnReinitialize
         subscription={{
           values: false,
           submitting: true,
           pristine: true,
           valid: true,
         }}
-        // initialValues={{
-        //   firstName: "John",
-        //   lastName: "Connor",
-        //   employed: false,
-        // }}
+        initialValues={{
+          // firstName: "John",
+          // lastName: "Connor",
+          // employed: true,
+        }}
       >
         {({ handleSubmit, form, __versions, ...formState }) => {
           const { submitting, pristine, valid } = formState;
@@ -98,9 +103,12 @@ function MultiStepForm() {
             <div>
               <form
                 onSubmit={handleSubmit}
-                className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+                className="bg-white shadow-md rounded px-4 sm:px-8 pt-6 pb-8 mb-4"
               >
                 <RenderCount />
+
+                <Input name="firstName" label="First Name" />
+                              <Checkbox name="employed" label="Employed" initialValue={true} />
 
                 <Input name="streetNr" label="Street Nr." />
                 <Input name="city" label="City" />
@@ -109,6 +117,19 @@ function MultiStepForm() {
                   name="postalCode"
                   label="Postal Code"
                   validate={required}
+                />
+
+                <Checkbox
+                  name="consent1"
+                  label="I agree to the terms and conditions"
+                  initialValue={false}
+                  // defaultValue={false}
+                />
+                <Checkbox
+                  name="consent2"
+                  label="I want to receive updates"
+                  initialValue={true}
+                  // defaultValue={false}
                 />
 
                 <div className="flex items-center justify-between">
@@ -161,22 +182,8 @@ function MultiStepForm() {
   );
 }
 
-const sidebarContent = (
-  <ul>
-    <li>
-      <Link href="/forms">Form 1</Link>
-    </li>
-    <li>
-      <Link href="/forms">Form 2</Link>
-    </li>
-    <li>
-      <Link href="/forms">Form 3</Link>
-    </li>
-  </ul>
-);
-
 MultiStepForm.getLayout = function getLayout({ children: page }) {
-  return <FormWizardLayout sidebar={null}>{page}</FormWizardLayout>;
+  return <SidebarLayout sidebar={null}>{page}</SidebarLayout>;
 };
 
 export default MultiStepForm;

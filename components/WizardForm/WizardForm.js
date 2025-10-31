@@ -1,48 +1,47 @@
-import { useContext, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import {
   Form as FinalForm,
-  Context as FinalFormContext,
-  FormSpy,
-  useForm,
+  // useFormState,
 } from "react-final-form";
+import { createForm } from "final-form";
 import useFormStore from "../../store";
+import useFormState from "../../vendor/react-final-form/useFormState";
 
-function FormInitializer({ initialValues}) {
-  const form = useForm();
-  const formValues = useFormStore((state) => state.formValues);
+function FormStateObserver({ stepNr }) {
+  const updateFormState = useFormStore((state) => state.updateFormState);
+  const subscription = useRef({ active: true, modified: true, dirtyFields: true }).current;
 
-  useEffect(() => {
-    // Initialize form values when the form loads
-    form.initialize({ ...initialValues, ...formValues });
-  }, []);
+  useFormState({
+    subscription,
+    onChange: (formState) => {
+      updateFormState(stepNr, formState);
+    },
+  });
+
+  return null;
+}
+
+function FormValuesObserver({ stepNr }) {
+  const updateFormValues = useFormStore((state) => state.updateFormValues);
+  const subscription = useRef({ values: true }).current;
+
+  useFormState({
+    subscription,
+    onChange: (formState) => {
+      updateFormValues(stepNr, formState.values);
+    },
+  });
 
   return null;
 }
 
 function FormSync({ children, stepNr, ...props }) {
-  // const form = useContext(FinalFormContext);
-  const updateFormState = useFormStore((state) => state.updateFormState);
-
   if (typeof children === "function") {
     return (
       <>
         {children(props)}
-        <FormInitializer initialValues={props.initialValues} />
-        <FormSpy
-          onChange={(formState) => {
-            const modifiedValues = Object.keys(formState.modified).reduce(
-              (acc, key) => {
-                acc[key] = formState.values[key];
-                return acc;
-              },
-              {}
-            );
-            updateFormState(stepNr, {
-              values: modifiedValues,
-              active: formState.active,
-            });
-          }}
-        ></FormSpy>
+        <FormStateObserver stepNr={stepNr} />
+        <FormValuesObserver stepNr={stepNr} />
       </>
     );
   }
@@ -50,32 +49,44 @@ function FormSync({ children, stepNr, ...props }) {
   return children;
 }
 
-function WizardForm({ children, ...props }) {
-  // const form = useContext(FinalFormContext);
-
-  const validate = (values) => {
-    if (props.validate) {
-      return props.validate(values);
-    }
-    return {};
+function WizardForm({ children, initialValues, ...props }) {
+  const globalState = useFormStore.getState();
+  const values = {
+    ...globalState.formValues,
+    ...initialValues,
   };
 
-  const handleSubmit = (values) => {
-    if (props.onSubmit) {
-      return props.onSubmit(values);
+  const form = useRef(createForm({ ...props, initialValues: values })).current;
+
+useEffect(() => {
+  const unsubscribe = useFormStore.subscribe(
+    ({ formState, formValues }) => {
+      form.batch(() => {
+        Object.keys(formState.modified).forEach(fieldName => {
+          if (formState.modified[fieldName]) {
+            if (formState.dirtyFields[fieldName]) {
+              form.change(fieldName, formValues[fieldName]);
+            } else {
+              form.change(fieldName, form.getState().initialValues[fieldName]);
+            }
+          }
+        });
+      });
     }
-    return {};
+  );
+
+  return () => {
+    console.log("Unsubscribing from form store.");
+    unsubscribe();
   };
+}, [form]);
 
   return (
     <FinalForm
-      // form={form}
-      // keepDirtyOnReinitialize
+      form={form}
       {...props}
-      validate={validate}
-      onSubmit={handleSubmit}
+      initialValues={values}
       component={FormSync}
-      // initialValues={formValues}
     >
       {children}
     </FinalForm>

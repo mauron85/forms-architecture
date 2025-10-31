@@ -3,7 +3,7 @@ import { ReadonlyField, ActiveField } from "../ReadonlyField";
 export const SidebarLayout = ({ children, sidebar }) => {
   return (
     <div className="flex h-screen bg-gray-100">
-      <div className="w-64 bg-gray-200 p-4">
+      <div className="w-32 sm:w-64 bg-gray-200 p-4 overflow-x-auto">
         {sidebar}
         <ReadonlyField label="First Name" name="firstName" />
         <ReadonlyField label="Last Name" name="lastName" />
@@ -13,7 +13,7 @@ export const SidebarLayout = ({ children, sidebar }) => {
         <ReadonlyField label="Notes" name="notes" />
         <ActiveField />
       </div>
-      <div className="flex-1 p-4">{children}</div>
+      <div className="flex-1 p-4 overflow-y-auto">{children}</div>
     </div>
   );
 };

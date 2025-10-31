@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { WizardForm } from "../../components/WizardForm";
 import { RenderCount } from "../../components/RenderCount";
 import { Input, Checkbox, TextArea } from "../../components/Field";
-import { FormWizardLayout } from "../../components/Layout";
+import { SidebarLayout } from "../../components/Layout";
 import { useRouter } from "next/router";
 
 const required = (value) => (value ? undefined : "Required");
@@ -28,11 +27,11 @@ function MultiStepForm() {
 
   const onBack = () => {
     router.replace("/forms");
-  }
+  };
 
   return (
     <>
-      <h1>Multi step form example</h1>
+      <h1 className="text-3xl font-bold mb-4">Multi step form example</h1>
 
       <WizardForm
         stepNr={3}
@@ -90,22 +89,9 @@ function MultiStepForm() {
   );
 }
 
-const sidebarContent = (
-  <ul>
-    <li>
-      <Link href="/forms">Form 1</Link>
-    </li>
-    <li>
-      <Link href="/forms">Form 2</Link>
-    </li>
-    <li>
-      <Link href="/forms">Form 3</Link>
-    </li>
-  </ul>
-);
 
 MultiStepForm.getLayout = function getLayout({ children: page }) {
-  return <FormWizardLayout sidebar={null}>{page}</FormWizardLayout>;
+  return <SidebarLayout sidebar={null}>{page}</SidebarLayout>;
 };
 
 export default MultiStepForm;
