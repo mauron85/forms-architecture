@@ -2,8 +2,7 @@ import { CodePane } from "spectacle";
 import { Form as FinalForm, FormSpy } from "react-final-form";
 import { RenderCount } from "../../RenderCount";
 import { Input, Checkbox, TextArea } from "../../Field";
-
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+import { sleep } from "#utils/sleep";
 
 const onSubmit = async (values) => {
   await sleep(300);

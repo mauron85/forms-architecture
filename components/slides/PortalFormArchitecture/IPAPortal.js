@@ -4,9 +4,8 @@ import { Form as FinalForm, FormSpy } from "react-final-form";
 import { createForm } from "final-form";
 import { RenderCount } from "../../RenderCount";
 import { Input, Checkbox, TextArea } from "../../Field";
-
-const noop = () => {};
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+import { noop } from "#utils/noop";
+import { sleep } from "#utils/sleep";
 
 const onSubmit = async (values) => {
   await sleep(300);
