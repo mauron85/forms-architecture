@@ -34,7 +34,6 @@ function MultiStepForm() {
       <h1 className="text-3xl font-bold mb-4">Multi step form example</h1>
 
       <WizardForm
-        stepNr={3}
         validate={validateStep}
         onSubmit={onSubmit}
         subscription={{

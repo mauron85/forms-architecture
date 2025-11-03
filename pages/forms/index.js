@@ -34,7 +34,6 @@ function MultiStepForm() {
       <h2 className="text-2xl font-bold mb-4">Step 1</h2>
 
       <WizardForm
-        stepNr={1}
         validate={validateStep1}
         subscription={{
           values: false,
@@ -81,7 +80,6 @@ function MultiStepForm() {
       <h2 className="text-2xl font-bold mb-4">Step 2</h2>
 
       <WizardForm
-        stepNr={2}
         // validate={validateStep1}
         onSubmit={onSubmit}
         // keepDirtyOnReinitialize

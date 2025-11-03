@@ -1,88 +1,92 @@
 import { useRef, useEffect } from "react";
-import {
-  Form as FinalForm,
-  // useFormState,
-} from "react-final-form";
+import { Form as FinalForm, useForm } from "react-final-form";
 import { createForm } from "final-form";
-import useFormStore from "../../store";
-import useFormState from "../../vendor/react-final-form/useFormState";
+import useFormStore, { GLOBAL_FORM_ID } from "../../store";
 
-function FormStateObserver({ stepNr }) {
-  const updateFormState = useFormStore((state) => state.updateFormState);
-  const subscription = useRef({ active: true, modified: true, dirtyFields: true }).current;
+function FormSync({ children, formId = GLOBAL_FORM_ID, ...props }) {
+  const form = useForm("FormSync");
+  const setFormState = useFormStore((state) => state.setFormState);
+  const setFormValues = useFormStore((state) => state.setFormValues);
+  const isSyncingRef = useRef(false);
+  const lastValuesRef = useRef(form.getState().values);
 
-  useFormState({
-    subscription,
-    onChange: (formState) => {
-      updateFormState(stepNr, formState);
-    },
-  });
-
-  return null;
-}
-
-function FormValuesObserver({ stepNr }) {
-  const updateFormValues = useFormStore((state) => state.updateFormValues);
-  const subscription = useRef({ values: true }).current;
-
-  useFormState({
-    subscription,
-    onChange: (formState) => {
-      updateFormValues(stepNr, formState.values);
-    },
-  });
-
-  return null;
-}
-
-function FormSync({ children, stepNr, ...props }) {
-  if (typeof children === "function") {
-    return (
-      <>
-        {children(props)}
-        <FormStateObserver stepNr={stepNr} />
-        <FormValuesObserver stepNr={stepNr} />
-      </>
+  useEffect(() => {
+    const unsubscribe = form.subscribe(
+      (state) => {
+        if (isSyncingRef.current) return;
+        const { values, modified } = state;
+        Object.entries(modified).forEach(([key, isModifield]) => {
+          if (isModifield && !values.hasOwnProperty(key)) {
+            values[key] = undefined;
+          }
+        });
+        isSyncingRef.current = true;
+        setFormValues(formId, values);
+        isSyncingRef.current = false;
+        lastValuesRef.current = values;
+      },
+      { values: true, modified: true }
     );
+    return unsubscribe;
+  }, [form, setFormValues]);
+
+  useEffect(() => {
+    const unsubscribe = form.subscribe(
+      (state) => {
+        setFormState(formId, state);
+      },
+      { active: true }
+    );
+    return unsubscribe;
+  }, [form, setFormState]);
+
+  useEffect(() => {
+    const unsubscribe = useFormStore.subscribe(
+      (state) => state.forms[formId]?.values,
+      (nextValues) => {
+        if (isSyncingRef.current || !nextValues) return;
+
+        const prev = lastValuesRef.current;
+        isSyncingRef.current = true;
+        form.batch(() =>
+          Object.keys(nextValues).forEach((k) => {
+            if (nextValues[k] !== prev[k]) {
+              form.change(k, nextValues[k]);
+            }
+          })
+        );
+        isSyncingRef.current = false;
+        lastValuesRef.current = form.getState().values;
+      }
+    );
+
+    return unsubscribe;
+  }, [form, formId]);
+
+  if (typeof children === "function") {
+    return children(props);
   }
 
   return children;
 }
 
-function WizardForm({ children, initialValues, ...props }) {
-  const globalState = useFormStore.getState();
+function WizardForm({
+  formId = GLOBAL_FORM_ID,
+  initialValues,
+  children,
+  ...props
+}) {
+  const globalState = useFormStore.getState().forms[formId] ?? {};
   const values = {
-    ...globalState.formValues,
+    ...globalState.values,
     ...initialValues,
   };
 
   const form = useRef(createForm({ ...props, initialValues: values })).current;
 
-useEffect(() => {
-  const unsubscribe = useFormStore.subscribe(
-    ({ formState, formValues }) => {
-      form.batch(() => {
-        Object.keys(formState.modified).forEach(fieldName => {
-          if (formState.modified[fieldName]) {
-            if (formState.dirtyFields[fieldName]) {
-              form.change(fieldName, formValues[fieldName]);
-            } else {
-              form.change(fieldName, form.getState().initialValues[fieldName]);
-            }
-          }
-        });
-      });
-    }
-  );
-
-  return () => {
-    console.log("Unsubscribing from form store.");
-    unsubscribe();
-  };
-}, [form]);
-
   return (
     <FinalForm
+      formId={formId}
       form={form}
       {...props}
       initialValues={values}
@@ -93,4 +97,4 @@ useEffect(() => {
   );
 }
 
-export { WizardForm };
+export { WizardForm, GLOBAL_FORM_ID };

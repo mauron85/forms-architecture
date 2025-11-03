@@ -1,25 +1,36 @@
 import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 
-const useFormStore = create((set) => ({
-  formValues: {
-    firstName: "Albert",
-    // lastName: "Einstein"
-  },
-  formState: {},
-  updateFormValues: (stepNr, values) =>
-    set((state) => ({
-      formValues: {
-        ...state.formValues,
-        ...values,
-      },
-    })),
-  updateFormState: (stepNr, formState) =>
-    set((state) => ({
-      formState: {
-        ...state.formState,
-        ...formState,
-      },
-    })),
-}));
+export const GLOBAL_FORM_ID = Symbol("__global");
+
+export const useFormStore = create(
+  subscribeWithSelector((set) => ({
+    forms: {
+      [GLOBAL_FORM_ID]: { values: {}, state: {} },
+    },
+
+    setFormValues: (formId, updates) =>
+      set((state) => ({
+        forms: {
+          ...state.forms,
+          [formId]: {
+            ...state.forms[formId],
+            values: { ...state.forms[formId]?.values, ...updates },
+          },
+        },
+      })),
+
+    setFormState: (formId, stateUpdates) =>
+      set((state) => ({
+        forms: {
+          ...state.forms,
+          [formId]: {
+            ...state.forms[formId],
+            state: stateUpdates,
+          },
+        },
+      })),
+  }))
+);
 
 export default useFormStore;
